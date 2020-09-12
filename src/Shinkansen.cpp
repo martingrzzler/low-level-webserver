@@ -5,10 +5,12 @@
 #include <netinet/in.h>
 #include <string>
 #include <iostream>
+#include <bits/stdc++.h>
 
 #include "Shinkansen.h"
 #include "Utils.h"
 #include "Request.h"
+#include "Response.h"
 
 using namespace std;
 
@@ -47,7 +49,7 @@ void Shinkansen::Initialize()
 void Shinkansen::Listen()
 {
 
-  char const *response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+  // char const *response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
 
   while (1)
@@ -62,9 +64,23 @@ void Shinkansen::Listen()
 
     Request request = this->ParseRequest();
 
+    // response config
+    pair<int, string> statusCode;
+    statusCode.first = 200;
+    statusCode.second = "OK";
+    Response response;
+    response.SetContentType("text/plain");
+    response.SetStatusCode(statusCode);
+    response.SetBody("Everything is working");
+
+    string s = response.ToString();
+    cout << s << endl;
+    char rawResponse [s.length() + 1];
+    strcpy(rawResponse, s.c_str());
+
     cout << "Method: " << request.GetHttpMethod() << " PATH: " << request.GetRoute() << endl;
 
-    write(this->clientSocket, response, strlen(response));
+    write(this->clientSocket, rawResponse, strlen(rawResponse));
     close(this->clientSocket);
   }
 }

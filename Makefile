@@ -1,5 +1,5 @@
-server: server.o Utils.o Shinkansen.o Request.o
-		g++ -o build/server build/server.o build/Utils.o build/Shinkansen.o build/Request.o
+server: server.o Utils.o Shinkansen.o Request.o Response.o
+		g++ -o build/server build/server.o build/Utils.o build/Shinkansen.o build/Request.o build/Response.o
 
 server.o: 
 		g++ src/server.cpp -c -o build/server.o
@@ -13,6 +13,9 @@ Utils.o:
 
 Request.o:
 		g++ src/Request.cpp -c -o build/Request.o
+
+Response.o:
+		g++ src/Response.cpp -c -o build/Response.o
 
 
 
