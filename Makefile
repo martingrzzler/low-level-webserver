@@ -17,13 +17,11 @@ Request.o:
 Response.o:
 		g++ src/Response.cpp -c -o build/Response.o
 
-
-
-
-
-
-play:
+comp:
 		g++ src/playground.cpp -o build/play.o --std=c++17
+
+runp:
+		./build/play.o
 
 clean: 
 		rm ./build/*

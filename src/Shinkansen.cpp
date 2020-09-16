@@ -49,9 +49,6 @@ void Shinkansen::Initialize()
 void Shinkansen::Listen()
 {
 
-  // char const *response = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-
-
   while (1)
   {
     int addrlen = sizeof(this->address);
@@ -62,16 +59,26 @@ void Shinkansen::Listen()
       exit(EXIT_FAILURE);
     }
 
+    // form request object
     Request request = this->ParseRequest();
+    // read file
+    ifstream f;
+    stringstream body;
+  
+    f.open("public/hello.html", ios::in);
+    body << f.rdbuf();
+
+    
 
     // response config
     pair<int, string> statusCode;
     statusCode.first = 200;
     statusCode.second = "OK";
     Response response;
-    response.SetContentType("text/plain");
+    response.SetContentType("text/html");
     response.SetStatusCode(statusCode);
-    response.SetBody("Everything is working");
+    response.SetBody(body.str());
+
 
     string s = response.ToString();
     cout << s << endl;
