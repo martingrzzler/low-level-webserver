@@ -8,6 +8,5 @@ class Utils
 public:
   Utils() = delete;
   static string ConvertToString(char* a, int size);
-
 };
 

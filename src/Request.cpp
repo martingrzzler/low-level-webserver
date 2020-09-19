@@ -35,3 +35,10 @@ void Request::SetRoute(string route)
 {
   this->route = route;
 }
+
+string Request::GetFileExtension() 
+{ 
+  string route = this->GetRoute();
+  int startIndex = route.find(".");
+  return route.substr(startIndex + 1, route.length() -1 );
+}

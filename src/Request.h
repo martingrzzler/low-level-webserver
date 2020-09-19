@@ -16,4 +16,5 @@ public:
   void SetHttpMethod(string method);
   string GetRoute();
   void SetRoute(string route);
+  string GetFileExtension();
 };

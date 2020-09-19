@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Request.h"
+#include "Response.h"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ private:
   sockaddr_in AddressConfig();
   void Initialize();
   void Listen();
+  void SendFile(Request req);
+  void SendRaw(Response& res);
   Request ParseRequest();
   
 public:

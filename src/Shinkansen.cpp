@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "Request.h"
 #include "Response.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ Shinkansen::Shinkansen(int port)
 }
 
 void Shinkansen::Initialize()
-{ 
+{
   // Creating socket file descriptor
   if ((this->serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
   {
@@ -43,7 +44,6 @@ void Shinkansen::Initialize()
   }
 
   cout << "Server listening on port " << this->port << "..." << endl;
-
   this->Listen();
 }
 
@@ -62,41 +62,109 @@ void Shinkansen::Listen()
 
     // form request object
     Request request = this->ParseRequest();
-    // read file
-    ifstream f;
-    stringstream body;
-    int size;
-  
-    f.open("public/mountain.jpg", ios::binary);
-    body << f.rdbuf();
 
-    // response config
-    pair<int, string> statusCode;
-    statusCode.first = 200;
-    statusCode.second = "OK";
-    Response response;
-    response.SetContentType("image/jpeg");
-    response.SetStatusCode(statusCode);
-    response.SetBody(body.str());
+    this->SendFile(request);
 
+    // // read file
+    // ifstream f;
+    // stringstream body;
+    // int size;
 
-    string s = response.ToString();
+    // f.open("public/hello.html", ios::binary);
+    // body << f.rdbuf();
 
-    char rawResponse [s.length()];
-    // try memcopy 
-    memcpy(rawResponse, s.c_str(), s.length());
-    // strcpy(rawResponse, s.c_str());
+    // // response config
+    // pair<int, string> statusCode;
+    // statusCode.first = 200;
+    // statusCode.second = "OK";
+    // Response response;
+    // response.SetContentType("text/html");
+    // response.SetStatusCode(statusCode);
+    // response.SetBody(body.str());
 
-    cout << "Method: " << request.GetHttpMethod() << " PATH: " << request.GetRoute() << endl;
-    // cant use strlen because of null termination
-    write(this->clientSocket, rawResponse, sizeof(rawResponse));
-    // write(this->clientSocket, rawResponse, strlen(rawResponse));
-    
-    close(this->clientSocket);
+    // string s = response.ToString();
+
+    // char rawResponse [s.length()];
+    // // try memcopy
+    // memcpy(rawResponse, s.c_str(), s.length());
+    // // strcpy(rawResponse, s.c_str());
+
+    // cout << "Method: " << request.GetHttpMethod() << " PATH: " << request.GetRoute() << endl;
+    // // cant use strlen because of null termination
+    // write(this->clientSocket, rawResponse, sizeof(rawResponse));
+    // // write(this->clientSocket, rawResponse, strlen(rawResponse));
+
+    // close(this->clientSocket);
   }
 }
 
-Request Shinkansen::ParseRequest() 
+void Shinkansen::SendFile(Request req)
+{
+  Response *res = new Response();
+  ifstream in;
+  pair<int, string> statusCode;
+  stringstream body;
+
+  // return homepage
+  if (req.GetRoute() == "/" || req.GetRoute() == "")
+  {
+    in.open("public/index.html", ios::binary);
+    if (in.is_open())
+    {
+      statusCode.first = 200;
+      statusCode.second = "Ok";
+      res->SetStatusCode(statusCode);
+      res->SetContentType("text/html");
+
+      // read data and assign to body
+      body << in.rdbuf();
+      res->SetBody(body.str());
+
+      this->SendRaw(*res);
+      delete res;
+      return; 
+    }
+  }
+  // try to find file
+  in.open("public" + req.GetRoute(), ios::binary);
+
+  if (!in.is_open())
+  {
+
+    statusCode.first = 404;
+    statusCode.second = "Not Found";
+    res->SetStatusCode(statusCode);
+    res->SetContentType("text/html");
+    res->SetBody("<h1>404 Not Found</h1>\n<p>Please check your request url!</p>");
+    this->SendRaw(*res);
+    delete res;
+    return;
+  }
+  // response config
+
+  statusCode.first = 200;
+  statusCode.second = "Ok";
+  res->SetStatusCode(statusCode);
+  res->SetContentType(Constants::GetContentTypeFromExt(req.GetFileExtension()));
+
+  // read data and assign to body
+  body << in.rdbuf();
+  res->SetBody(body.str());
+
+  this->SendRaw(*res);
+  delete res;
+}
+
+void Shinkansen::SendRaw(Response &res)
+{
+  string s = res.ToString();
+  char rawResponse[s.length()];
+  memcpy(rawResponse, s.c_str(), s.length());
+  write(this->clientSocket, rawResponse, sizeof(rawResponse));
+  close(this->clientSocket);
+}
+
+Request Shinkansen::ParseRequest()
 {
   char buffer[30000] = {0};
   read(this->clientSocket, buffer, 30000);

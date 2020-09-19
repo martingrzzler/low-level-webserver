@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 
 #include "Utils.h"
 
@@ -15,3 +16,4 @@ string Utils::ConvertToString(char* a, int size)
   } 
   return s; 
 }
+
