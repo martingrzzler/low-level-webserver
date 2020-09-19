@@ -31,7 +31,7 @@ string Response::ToString()
 {
   stringstream ss;
   ss << "HTTP/1.1 " << this->statusCode.first << " " << this->statusCode.second << endl
-  << "Content-Type: " << this->contentType << " Content-Length: " << this->body.length() << endl << endl << this->body << endl;
+  << "Content-Type: " << this->contentType << endl << "Content-Length: " << this->body.length() << endl << endl << this->body;
 
   return ss.str();
 }

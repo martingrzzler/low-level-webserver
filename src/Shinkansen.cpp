@@ -5,7 +5,8 @@
 #include <netinet/in.h>
 #include <string>
 #include <iostream>
-#include <bits/stdc++.h>
+#include <fstream>
+#include <sstream>
 
 #include "Shinkansen.h"
 #include "Utils.h"
@@ -64,30 +65,33 @@ void Shinkansen::Listen()
     // read file
     ifstream f;
     stringstream body;
+    int size;
   
-    f.open("public/hello.html", ios::in);
+    f.open("public/mountain.jpg", ios::binary);
     body << f.rdbuf();
-
-    
 
     // response config
     pair<int, string> statusCode;
     statusCode.first = 200;
     statusCode.second = "OK";
     Response response;
-    response.SetContentType("text/html");
+    response.SetContentType("image/jpeg");
     response.SetStatusCode(statusCode);
     response.SetBody(body.str());
 
 
     string s = response.ToString();
-    cout << s << endl;
-    char rawResponse [s.length() + 1];
-    strcpy(rawResponse, s.c_str());
+
+    char rawResponse [s.length()];
+    // try memcopy 
+    memcpy(rawResponse, s.c_str(), s.length());
+    // strcpy(rawResponse, s.c_str());
 
     cout << "Method: " << request.GetHttpMethod() << " PATH: " << request.GetRoute() << endl;
-
-    write(this->clientSocket, rawResponse, strlen(rawResponse));
+    // cant use strlen because of null termination
+    write(this->clientSocket, rawResponse, sizeof(rawResponse));
+    // write(this->clientSocket, rawResponse, strlen(rawResponse));
+    
     close(this->clientSocket);
   }
 }
