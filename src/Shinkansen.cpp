@@ -64,37 +64,6 @@ void Shinkansen::Listen()
     Request request = this->ParseRequest();
 
     this->SendFile(request);
-
-    // // read file
-    // ifstream f;
-    // stringstream body;
-    // int size;
-
-    // f.open("public/hello.html", ios::binary);
-    // body << f.rdbuf();
-
-    // // response config
-    // pair<int, string> statusCode;
-    // statusCode.first = 200;
-    // statusCode.second = "OK";
-    // Response response;
-    // response.SetContentType("text/html");
-    // response.SetStatusCode(statusCode);
-    // response.SetBody(body.str());
-
-    // string s = response.ToString();
-
-    // char rawResponse [s.length()];
-    // // try memcopy
-    // memcpy(rawResponse, s.c_str(), s.length());
-    // // strcpy(rawResponse, s.c_str());
-
-    // cout << "Method: " << request.GetHttpMethod() << " PATH: " << request.GetRoute() << endl;
-    // // cant use strlen because of null termination
-    // write(this->clientSocket, rawResponse, sizeof(rawResponse));
-    // // write(this->clientSocket, rawResponse, strlen(rawResponse));
-
-    // close(this->clientSocket);
   }
 }
 
